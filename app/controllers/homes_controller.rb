@@ -1,4 +1,7 @@
 class HomesController < ApplicationController
+  def top
+  end
+
   def new
     @list = Book.new
     @lists= Book.all
@@ -7,7 +10,8 @@ class HomesController < ApplicationController
   def create
     @list = Book.new(list_params)
     if @list.save
-    redirect_to home_path(@list.id)
+      flash[:notice] = "Book was successfully created."
+    redirect_to book_path(@list.id)
     else
       @lists = Book.all
     render :new
@@ -23,9 +27,25 @@ class HomesController < ApplicationController
   end
 
   def update
+    @list = Book.find(params[:id])
+    if @list.update(list_params)
+       flash[:notice] = "Book was successfully edited."
+    redirect_to book_path(@list.id)
+    else
+    render :edit
+    end
+  end
+
+  def destroy
     list = Book.find(params[:id])
-    list.update(list_params)
-    redirect_to home_path(list.id)
+   if list.destroy
+     @list = Book.new
+     @lists = Book.all
+     flash[:notice] = "Book was successfully destroyed."
+     render :new
+   else
+     render:new
+   end
   end
 
    private
